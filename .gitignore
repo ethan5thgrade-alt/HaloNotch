@@ -1,0 +1,16 @@
+# XcodeGen output — regenerate with `xcodegen generate`
+*.xcodeproj/
+Sources/Resources/Info.plist
+
+# Build artifacts
+build/
+DerivedData/
+.build/
+*.xcuserstate
+xcuserdata/
+
+# macOS
+.DS_Store
+
+# Vendored MediaRemote adapter (fetched via scripts/install-mediaremote-adapter.sh)
+Sources/Resources/mediaremote-adapter/
