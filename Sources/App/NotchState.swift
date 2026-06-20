@@ -20,6 +20,9 @@ final class NotchState: ObservableObject {
     /// True when we're hugging a real hardware notch (vs a floating pill).
     @Published var hasPhysicalNotch = true
 
+    /// True while the tray is showing the camera mirror instead of the modules.
+    @Published var mirrorMode = false
+
     private init() {}
 
     func open()  { if mode != .open  { mode = .open  } }

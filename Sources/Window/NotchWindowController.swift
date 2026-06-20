@@ -46,6 +46,7 @@ final class NotchWindowController {
             .environmentObject(BatteryService.shared)
             .environmentObject(CalendarService.shared)
             .environmentObject(PomodoroController.shared)
+            .environmentObject(MirrorController.shared)
 
         let host = NSHostingView(rootView: root)
         host.frame = CGRect(origin: .zero, size: size)
@@ -94,6 +95,11 @@ final class NotchWindowController {
     }
 
     private func close() {
+        // Closing the tray always exits the mirror and stops the camera.
+        if state.mirrorMode {
+            state.mirrorMode = false
+            MirrorController.shared.stop()
+        }
         withAnimation(prefs.closeAnimation) {
             state.mode = .closed
             state.isHovering = false

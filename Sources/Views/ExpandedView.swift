@@ -4,14 +4,45 @@ import SwiftUI
 /// material preference; content honors the enabled-module toggles.
 struct ExpandedPanel: View {
     @EnvironmentObject var prefs: Preferences
+    @EnvironmentObject var state: NotchState
+    @EnvironmentObject var mirror: MirrorController
 
     var body: some View {
-        ExpandedContent()
-            .padding(14)
+        ZStack(alignment: .bottomTrailing) {
+            Group {
+                if state.mirrorMode {
+                    MirrorView()
+                } else {
+                    ExpandedContent().padding(14)
+                }
+            }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .background(background)
             .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-            .shadow(color: .black.opacity(0.35), radius: 22, y: 12)
+
+            mirrorToggle
+        }
+        .shadow(color: .black.opacity(0.35), radius: 22, y: 12)
+    }
+
+    /// Floating button: enter the mirror, or exit back to the modules.
+    private var mirrorToggle: some View {
+        Button(action: toggleMirror) {
+            Image(systemName: state.mirrorMode ? "xmark" : "camera.viewfinder")
+                .font(.system(size: 11, weight: .bold))
+                .foregroundStyle(.white)
+                .frame(width: 26, height: 26)
+                .background(.black.opacity(0.45), in: Circle())
+                .overlay(Circle().strokeBorder(.white.opacity(0.18), lineWidth: 0.5))
+        }
+        .buttonStyle(.plain)
+        .padding(12)
+        .help(state.mirrorMode ? "Close mirror" : "Mirror")
+    }
+
+    private func toggleMirror() {
+        state.mirrorMode.toggle()
+        if state.mirrorMode { mirror.start() } else { mirror.stop() }
     }
 
     @ViewBuilder private var background: some View {
