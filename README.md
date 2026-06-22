@@ -1,11 +1,23 @@
-# HaloNotch
+# HaloNotch — the record-player notch
 
-A full-scale **Dynamic Island for your MacBook** — a native SwiftUI menu-bar app
-that turns the notch (or, on non-notch Macs, a floating top-center pill) into a
-live, interactive island: hover to expand, drop down a glass tray with Now
-Playing, battery, clock/calendar, and a Pomodoro timer.
+A native SwiftUI menu-bar app that turns your MacBook's **notch into a full
+Dynamic Island** — and turns Now Playing into a tiny **turntable** you can tap to
+swap between **vinyl · cassette · CD**. Hover the notch to drop a glass tray with
+Now Playing, battery, clock/calendar, a Pomodoro timer, and a **camera mirror**
+(the FaceTime camera sits right behind the notch). On non-notch Macs it's a
+floating top-center pill.
 
-Built and researched against the leading apps in this space — NotchNook,
+<p align="center">
+  <img src="docs/hero.gif" width="440" alt="HaloNotch — album art spinning as a vinyl record in the notch">
+</p>
+
+> **Status — portfolio / build-in-public project.** A personal learning build,
+> shared for fun — not a notarized, actively-maintained product. It leans on
+> private/undocumented macOS surfaces (other apps' now-playing, macOS 26 Liquid
+> Glass) that Apple can change, so expect occasional breakage on OS updates. PRs
+> welcome; no support promised.
+
+Researched against the leading apps in this space — NotchNook,
 [Boring Notch](https://github.com/TheBoredTeam/boring.notch) (the open-source
 reference), Alcove, and Notchy.
 
@@ -13,8 +25,14 @@ reference), Alcove, and Notchy.
 
 - **Three states like iOS:** idle (black notch) → compact "live activity" flanks
   (album art + visualizer / timer) → expanded glass tray on hover.
-- **Now Playing** — album art, scrubber, transport controls, and a live audio
-  visualizer. Layered backend (see below) so it works out of the box.
+- **Now Playing as a record player** — the album art plays on a spinning record
+  with a tonearm; **tap it to cycle skins: vinyl → cassette → CD.** Transport
+  controls + a layered backend (see below) so it works out of the box. The record
+  spins only while audio plays and eases to a stop on pause.
+- **Camera mirror** — the FaceTime camera is physically behind the notch, so a
+  button flips the tray into a live mirrored camera view. The capture session
+  runs only while the mirror is open (the green privacy light is never on in the
+  background).
 - **Battery & charging** — fill + percentage + time-to-full/empty, instant
   updates via IOKit power-source notifications.
 - **Clock & calendar** — live time/date and your next EventKit events.
@@ -30,7 +48,8 @@ reference), Alcove, and Notchy.
 Requires macOS 14+, Xcode 26, and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
 ```sh
-cd ~/code/HaloNotch
+git clone https://github.com/ethan5thgrade-alt/HaloNotch.git
+cd HaloNotch
 xcodegen generate          # creates HaloNotch.xcodeproj (git-ignored)
 open HaloNotch.xcodeproj    # then ⌘R in Xcode
 # …or headless:
@@ -45,6 +64,7 @@ notch panel appears on the screen that has a notch (or the main screen).
 - **Automation** (Spotify / Music) — the first time media controls run, for the
   AppleScript now-playing source.
 - **Calendar** — the first time the clock module appears, if you use it.
+- **Camera** — the first time you open the mirror.
 
 ## The Now Playing backend (the interesting part)
 
@@ -81,8 +101,8 @@ Sources/
                  NotchWindowController (positioning + open/close state machine)
   Views/         NotchRootView (3-layer morph), NotchShape (notch silhouette),
                  GlassMaterial (Liquid Glass / vibrancy), ExpandedView
-  Views/Modules/ NowPlaying/ (model, AppleScript + adapter sources, controller,
-                 view, visualizer), Battery/, Clock/, Timer/
+  Views/Modules/ NowPlaying/ (model, sources, controller, view, record skins:
+                 vinyl/cassette/CD), Battery/, Clock/, Timer/, Mirror/ (camera)
 ```
 
 - **Window:** a `.borderless`/`.nonactivatingPanel` `NSPanel` at `.statusBar`

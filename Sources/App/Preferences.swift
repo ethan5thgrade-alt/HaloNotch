@@ -46,6 +46,7 @@ final class Preferences: ObservableObject {
         static let animationSpeed = "animationSpeed"
         static let showVisualizer = "showVisualizer"
         static let nowPlayingSource = "nowPlayingSource"
+        static let recordSkin = "recordSkin"
         static let launchAtLogin = "launchAtLogin"
         static let modNowPlaying = "moduleNowPlaying"
         static let modBattery = "moduleBattery"
@@ -65,6 +66,11 @@ final class Preferences: ObservableObject {
     @Published var nowPlayingSource: NowPlayingSourceKind {
         didSet { d.set(nowPlayingSource.rawValue, forKey: K.nowPlayingSource) }
     }
+    /// Which Now Playing media skin shows (vinyl / cassette / CD). Tap to cycle.
+    @Published var recordSkin: RecordSkin {
+        didSet { d.set(recordSkin.rawValue, forKey: K.recordSkin) }
+    }
+    func cycleRecordSkin() { recordSkin = recordSkin.next }
 
     // Module toggles
     @Published var moduleNowPlaying: Bool { didSet { d.set(moduleNowPlaying, forKey: K.modNowPlaying) } }
@@ -89,6 +95,7 @@ final class Preferences: ObservableObject {
         animationSpeed = d.object(forKey: K.animationSpeed) as? Double ?? 1.0
         showVisualizer = d.object(forKey: K.showVisualizer) as? Bool ?? true
         nowPlayingSource = NowPlayingSourceKind(rawValue: d.string(forKey: K.nowPlayingSource) ?? "") ?? .auto
+        recordSkin = RecordSkin(rawValue: d.string(forKey: K.recordSkin) ?? "") ?? .vinyl
         moduleNowPlaying = d.object(forKey: K.modNowPlaying) as? Bool ?? true
         moduleBattery = d.object(forKey: K.modBattery) as? Bool ?? true
         moduleClock = d.object(forKey: K.modClock) as? Bool ?? true

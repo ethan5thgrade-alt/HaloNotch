@@ -28,7 +28,7 @@ struct NowPlayingView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            VinylRecord(artwork: np.info.artwork, isPlaying: np.info.isPlaying)
+            NowPlayingMedia(artwork: np.info.artwork, isPlaying: np.info.isPlaying)
                 .aspectRatio(1, contentMode: .fit)
                 .frame(maxHeight: .infinity)
         }
