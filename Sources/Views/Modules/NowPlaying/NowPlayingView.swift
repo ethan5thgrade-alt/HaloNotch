@@ -61,7 +61,9 @@ struct NowPlayingView: View {
         HStack(spacing: 22) {
             transport("backward.fill", size: 15) { np.previous() }
             transport(np.info.isPlaying ? "pause.fill" : "play.fill", size: 22) { np.togglePlayPause() }
+                .offset(x: 6)
             transport("forward.fill", size: 15) { np.next() }
+                .offset(x: 12)
         }
     }
 
