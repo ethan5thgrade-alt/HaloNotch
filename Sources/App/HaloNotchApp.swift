@@ -35,7 +35,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let prefs = Preferences.shared
         if prefs.moduleNowPlaying { NowPlayingController.shared.start() }
         if prefs.moduleBattery    { BatteryService.shared.start() }
-        if prefs.moduleSchool     { ScheduleService.shared.start() }
+        if prefs.moduleSchool     { ScheduleService.shared.start(); HomeworkService.shared.start() }
 
         // Dev aid: `open HaloNotch.app --args --demo-open` expands the tray on
         // launch so the expanded UI can be screenshotted without hovering.
@@ -50,5 +50,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NowPlayingController.shared.stop()
         BatteryService.shared.stop()
         ScheduleService.shared.stop()
+        HomeworkService.shared.stop()
     }
 }

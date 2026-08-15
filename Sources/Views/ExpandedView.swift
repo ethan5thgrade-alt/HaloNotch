@@ -12,6 +12,8 @@ struct ExpandedPanel: View {
             Group {
                 if state.mirrorMode {
                     MirrorView()
+                } else if state.schoolMode {
+                    SchoolPanel().padding(14)
                 } else {
                     ExpandedContent().padding(14)
                 }
@@ -25,19 +27,34 @@ struct ExpandedPanel: View {
         .shadow(color: .black.opacity(0.35), radius: 22, y: 12)
     }
 
-    /// Floating button: enter the mirror, or exit back to the modules.
+    /// Floating buttons: school panel and mirror, or exit back to the modules.
     private var mirrorToggle: some View {
-        Button(action: toggleMirror) {
-            Image(systemName: state.mirrorMode ? "xmark" : "camera.viewfinder")
-                .font(.system(size: 11, weight: .bold))
-                .foregroundStyle(.white)
-                .frame(width: 26, height: 26)
-                .background(.black.opacity(0.45), in: Circle())
-                .overlay(Circle().strokeBorder(.white.opacity(0.18), lineWidth: 0.5))
+        HStack(spacing: 6) {
+            if !state.mirrorMode {
+                Button(action: { state.schoolMode.toggle() }) {
+                    trayButtonLabel(state.schoolMode ? "xmark" : "graduationcap.fill")
+                }
+                .buttonStyle(.plain)
+                .help(state.schoolMode ? "Close school" : "School")
+            }
+            if !state.schoolMode {
+                Button(action: toggleMirror) {
+                    trayButtonLabel(state.mirrorMode ? "xmark" : "camera.viewfinder")
+                }
+                .buttonStyle(.plain)
+                .help(state.mirrorMode ? "Close mirror" : "Mirror")
+            }
         }
-        .buttonStyle(.plain)
         .padding(12)
-        .help(state.mirrorMode ? "Close mirror" : "Mirror")
+    }
+
+    private func trayButtonLabel(_ symbol: String) -> some View {
+        Image(systemName: symbol)
+            .font(.system(size: 11, weight: .bold))
+            .foregroundStyle(.white)
+            .frame(width: 26, height: 26)
+            .background(.black.opacity(0.45), in: Circle())
+            .overlay(Circle().strokeBorder(.white.opacity(0.18), lineWidth: 0.5))
     }
 
     private func toggleMirror() {
@@ -65,7 +82,7 @@ private struct ExpandedContent: View {
     @EnvironmentObject var np: NowPlayingController
 
     private var hasSidebar: Bool {
-        prefs.moduleClock || prefs.moduleBattery || prefs.moduleTimer || prefs.moduleSchool
+        prefs.moduleClock || prefs.moduleBattery || prefs.moduleTimer
     }
 
     var body: some View {
@@ -80,7 +97,6 @@ private struct ExpandedContent: View {
                     Divider().overlay(Color.white.opacity(0.12))
                 }
                 VStack(alignment: .leading, spacing: 10) {
-                    if prefs.moduleSchool  { SchoolView() }
                     if prefs.moduleClock   { ClockCalendarView() }
                     if prefs.moduleBattery { BatteryView() }
                     if prefs.moduleTimer   { TimerView() }

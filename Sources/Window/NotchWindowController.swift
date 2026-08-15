@@ -48,6 +48,7 @@ final class NotchWindowController {
             .environmentObject(PomodoroController.shared)
             .environmentObject(MirrorController.shared)
             .environmentObject(ScheduleService.shared)
+            .environmentObject(HomeworkService.shared)
 
         let host = NSHostingView(rootView: root)
         host.frame = CGRect(origin: .zero, size: size)
@@ -101,6 +102,7 @@ final class NotchWindowController {
             state.mirrorMode = false
             MirrorController.shared.stop()
         }
+        state.schoolMode = false
         withAnimation(prefs.closeAnimation) {
             state.mode = .closed
             state.isHovering = false

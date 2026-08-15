@@ -23,6 +23,9 @@ final class NotchState: ObservableObject {
     /// True while the tray is showing the camera mirror instead of the modules.
     @Published var mirrorMode = false
 
+    /// True while the tray is showing the school schedule + homework panel.
+    @Published var schoolMode = false
+
     private init() {}
 
     func open()  { if mode != .open  { mode = .open  } }
