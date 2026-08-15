@@ -46,11 +46,24 @@ final class HomeworkService: ObservableObject {
         let points: Double?
         let submitted: Bool
         let missing: Bool
+        let checkedOff: Bool?
     }
 
     private static let iso: ISO8601DateFormatter = {
         let f = ISO8601DateFormatter(); f.formatOptions = [.withInternetDateTime]; return f
     }()
+
+    /// Check an item off from the notch: drop it instantly, tell the Locker
+    /// server so the dashboard (and the next data refresh) agree.
+    func checkOff(_ item: HomeworkItem) {
+        items.removeAll { $0.id == item.id }
+        guard let url = URL(string: "http://localhost:8788/api/done") else { return }
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.httpBody = try? JSONSerialization.data(withJSONObject: ["assignmentId": item.id])
+        URLSession.shared.dataTask(with: req).resume()
+    }
 
     // MARK: - Compact notch display
 
@@ -82,7 +95,7 @@ final class HomeworkService: ObservableObject {
         var out: [HomeworkItem] = []
         for course in state.courses {
             let short = course.name.split(separator: "-").first.map(String.init) ?? course.name
-            for a in course.assignments where !a.submitted {
+            for a in course.assignments where !a.submitted && a.checkedOff != true {
                 let due = a.due_at.flatMap { Self.iso.date(from: $0) }
                 // Keep: missing work, or anything due in the next two weeks
                 // (including up to 2 days past-due that isn't flagged yet).

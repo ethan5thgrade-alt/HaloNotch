@@ -62,7 +62,9 @@ struct SchoolPanel: View {
                         .font(.system(size: 11))
                         .foregroundStyle(.white.opacity(0.45))
                 } else {
-                    ForEach(homework.items.prefix(5)) { HomeworkRow(item: $0, gold: gold) }
+                    ForEach(homework.items.prefix(5)) { item in
+                        HomeworkRow(item: item, gold: gold) { homework.checkOff(item) }
+                    }
                 }
                 Spacer(minLength: 0)
             }
@@ -118,16 +120,33 @@ private struct BlockRow: View {
 private struct HomeworkRow: View {
     let item: HomeworkItem
     let gold: Color
+    let onCheck: () -> Void
     @State private var hovering = false
+    @State private var hoveringCheck = false
 
     var body: some View {
-        Button(action: openInLocker) { row }
+        HStack(alignment: .firstTextBaseline, spacing: 7) {
+            // Check-off: click the circle to mark it done (drops from the queue).
+            Button(action: onCheck) {
+                Image(systemName: hoveringCheck ? "checkmark.circle.fill"
+                        : (item.missing ? "exclamationmark.circle.fill" : "circle"))
+                    .font(.system(size: hoveringCheck ? 10 : 8))
+                    .foregroundStyle(hoveringCheck ? AnyShapeStyle(gold)
+                        : (item.missing ? AnyShapeStyle(.red.opacity(0.85)) : AnyShapeStyle(.white.opacity(0.35))))
+                    .frame(width: 12)
+            }
             .buttonStyle(.plain)
-            .onHover { hovering = $0 }
-            .help("Open in Locker")
+            .onHover { hoveringCheck = $0 }
+            .help("Check off — done")
+
+            Button(action: openInLocker) { row }
+                .buttonStyle(.plain)
+                .onHover { hovering = $0 }
+                .help("Open in Locker")
+        }
     }
 
-    /// Deep-link into the Locker dashboard, straight to this assignment's chat.
+    /// Deep-link into the Locker dashboard, straight to this assignment.
     private func openInLocker() {
         if let url = URL(string: "http://localhost:8788/#a\(item.id)") {
             NSWorkspace.shared.open(url)
@@ -136,10 +155,6 @@ private struct HomeworkRow: View {
 
     private var row: some View {
         HStack(alignment: .firstTextBaseline, spacing: 7) {
-            Image(systemName: item.missing ? "exclamationmark.circle.fill" : "circle")
-                .font(.system(size: 8))
-                .foregroundStyle(item.missing ? .red.opacity(0.85) : .white.opacity(0.35))
-
             Text(item.name)
                 .font(.system(size: 11))
                 .lineLimit(1)
