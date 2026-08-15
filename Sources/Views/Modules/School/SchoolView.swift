@@ -118,8 +118,23 @@ private struct BlockRow: View {
 private struct HomeworkRow: View {
     let item: HomeworkItem
     let gold: Color
+    @State private var hovering = false
 
     var body: some View {
+        Button(action: openInLocker) { row }
+            .buttonStyle(.plain)
+            .onHover { hovering = $0 }
+            .help("Open in Locker")
+    }
+
+    /// Deep-link into the Locker dashboard, straight to this assignment's chat.
+    private func openInLocker() {
+        if let url = URL(string: "http://localhost:8788/#a\(item.id)") {
+            NSWorkspace.shared.open(url)
+        }
+    }
+
+    private var row: some View {
         HStack(alignment: .firstTextBaseline, spacing: 7) {
             Image(systemName: item.missing ? "exclamationmark.circle.fill" : "circle")
                 .font(.system(size: 8))
@@ -141,6 +156,9 @@ private struct HomeworkRow: View {
                 .font(.system(size: 9.5, weight: .semibold, design: .rounded))
                 .foregroundStyle(dueSoon ? gold : .white.opacity(0.5))
         }
+        .padding(.horizontal, 3).padding(.vertical, 1)
+        .background(RoundedRectangle(cornerRadius: 4).fill(.white.opacity(hovering ? 0.08 : 0)))
+        .contentShape(Rectangle())
     }
 
     private var dueSoon: Bool {
