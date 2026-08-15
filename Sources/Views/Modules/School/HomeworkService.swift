@@ -109,7 +109,15 @@ final class HomeworkService: ObservableObject {
                                         missing: a.missing, score: score))
             }
         }
-        let queue = Array(out.sorted { $0.score < $1.score }.prefix(6))
+        // Urgent work (missing, or due within 24h) pins to the top sorted by
+        // deadline — it must never be pushed off the list by easy quick wins.
+        // Everything else keeps Ethan's rule: easiest first, biggest last.
+        func urgent(_ i: HomeworkItem) -> Bool {
+            i.missing || (i.due.map { $0.timeIntervalSince(now) < 24 * 3600 } ?? false)
+        }
+        let pinned = out.filter(urgent).sorted { ($0.due ?? .distantFuture) < ($1.due ?? .distantFuture) }
+        let rest = out.filter { !urgent($0) }.sorted { $0.score < $1.score }
+        let queue = Array((pinned + rest).prefix(6))
         DispatchQueue.main.async { self.items = queue }
     }
 }
