@@ -142,7 +142,7 @@ private struct HomeworkRow: View {
             Button(action: openInLocker) { row }
                 .buttonStyle(.plain)
                 .onHover { hovering = $0 }
-                .help("Open in Locker")
+                .help("Open in Ethan's homework helper")
         }
     }
 
