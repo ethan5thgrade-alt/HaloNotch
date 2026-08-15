@@ -64,6 +64,10 @@ struct SettingsView: View {
                     }
                 Toggle("Clock & calendar", isOn: $prefs.moduleClock)
                 Toggle("Timer / Pomodoro", isOn: $prefs.moduleTimer)
+                Toggle("School schedule", isOn: $prefs.moduleSchool)
+                    .onChange(of: prefs.moduleSchool) { _, on in
+                        if on { ScheduleService.shared.start() } else { ScheduleService.shared.stop() }
+                    }
             }
         }
         .formStyle(.grouped)

@@ -56,11 +56,13 @@ private struct CompactView: View {
     @EnvironmentObject var prefs: Preferences
     @EnvironmentObject var np: NowPlayingController
     @EnvironmentObject var pomo: PomodoroController
+    @EnvironmentObject var school: ScheduleService
 
     private let flank: CGFloat = 72
 
     private var showMusic: Bool { prefs.moduleNowPlaying && np.info.hasContent }
     private var showTimer: Bool { prefs.moduleTimer && pomo.isRunning }
+    private var showSchool: Bool { prefs.moduleSchool && school.compactVisible }
 
     var body: some View {
         HStack(spacing: 0) {
@@ -85,6 +87,12 @@ private struct CompactView: View {
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity, alignment: .trailing)
                 .padding(.trailing, 8)
+        } else if showSchool, let lead = school.compactLead {
+            Text(lead)
+                .font(.system(size: 12, weight: .bold, design: .rounded))
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .padding(.trailing, 8)
         }
     }
 
@@ -99,6 +107,13 @@ private struct CompactView: View {
                 .font(.system(size: 13, weight: .semibold, design: .rounded))
                 .monospacedDigit()
                 .foregroundStyle(.white)
+                .padding(.leading, 8)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        } else if showSchool, let trail = school.compactTrail {
+            Text(trail)
+                .font(.system(size: 12, weight: .semibold, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(.white.opacity(0.85))
                 .padding(.leading, 8)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }

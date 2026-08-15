@@ -52,6 +52,7 @@ final class Preferences: ObservableObject {
         static let modBattery = "moduleBattery"
         static let modClock = "moduleClock"
         static let modTimer = "moduleTimer"
+        static let modSchool = "moduleSchool"
         static let notchWidthPadding = "notchWidthPadding"
     }
 
@@ -77,6 +78,7 @@ final class Preferences: ObservableObject {
     @Published var moduleBattery: Bool { didSet { d.set(moduleBattery, forKey: K.modBattery) } }
     @Published var moduleClock: Bool { didSet { d.set(moduleClock, forKey: K.modClock) } }
     @Published var moduleTimer: Bool { didSet { d.set(moduleTimer, forKey: K.modTimer) } }
+    @Published var moduleSchool: Bool { didSet { d.set(moduleSchool, forKey: K.modSchool) } }
 
     /// Extra width added to each side of the detected notch (only used when no
     /// physical notch exists and we synthesize a floating pill).
@@ -100,6 +102,7 @@ final class Preferences: ObservableObject {
         moduleBattery = d.object(forKey: K.modBattery) as? Bool ?? true
         moduleClock = d.object(forKey: K.modClock) as? Bool ?? true
         moduleTimer = d.object(forKey: K.modTimer) as? Bool ?? true
+        moduleSchool = d.object(forKey: K.modSchool) as? Bool ?? true
         notchWidthPadding = d.object(forKey: K.notchWidthPadding) as? Double ?? 0
         launchAtLogin = d.object(forKey: K.launchAtLogin) as? Bool ?? false
     }

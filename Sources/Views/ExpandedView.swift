@@ -65,7 +65,7 @@ private struct ExpandedContent: View {
     @EnvironmentObject var np: NowPlayingController
 
     private var hasSidebar: Bool {
-        prefs.moduleClock || prefs.moduleBattery || prefs.moduleTimer
+        prefs.moduleClock || prefs.moduleBattery || prefs.moduleTimer || prefs.moduleSchool
     }
 
     var body: some View {
@@ -80,6 +80,7 @@ private struct ExpandedContent: View {
                     Divider().overlay(Color.white.opacity(0.12))
                 }
                 VStack(alignment: .leading, spacing: 10) {
+                    if prefs.moduleSchool  { SchoolView() }
                     if prefs.moduleClock   { ClockCalendarView() }
                     if prefs.moduleBattery { BatteryView() }
                     if prefs.moduleTimer   { TimerView() }

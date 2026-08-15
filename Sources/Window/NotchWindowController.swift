@@ -47,6 +47,7 @@ final class NotchWindowController {
             .environmentObject(CalendarService.shared)
             .environmentObject(PomodoroController.shared)
             .environmentObject(MirrorController.shared)
+            .environmentObject(ScheduleService.shared)
 
         let host = NSHostingView(rootView: root)
         host.frame = CGRect(origin: .zero, size: size)

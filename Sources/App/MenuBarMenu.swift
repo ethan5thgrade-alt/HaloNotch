@@ -30,6 +30,7 @@ struct MenuBarMenu: View {
             Toggle("Battery", isOn: $prefs.moduleBattery)
             Toggle("Clock & Calendar", isOn: $prefs.moduleClock)
             Toggle("Timer", isOn: $prefs.moduleTimer)
+            Toggle("School", isOn: $prefs.moduleSchool)
 
             Divider()
 
