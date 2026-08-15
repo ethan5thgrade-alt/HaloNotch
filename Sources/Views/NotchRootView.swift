@@ -57,12 +57,17 @@ private struct CompactView: View {
     @EnvironmentObject var np: NowPlayingController
     @EnvironmentObject var pomo: PomodoroController
     @EnvironmentObject var school: ScheduleService
+    @EnvironmentObject var homework: HomeworkService
 
     private let flank: CGFloat = 72
 
     private var showMusic: Bool { prefs.moduleNowPlaying && np.info.hasContent }
     private var showTimer: Bool { prefs.moduleTimer && pomo.isRunning }
     private var showSchool: Bool { prefs.moduleSchool && school.compactVisible }
+    /// Outside class time, the flanks surface the homework queue instead.
+    private var showHomework: Bool {
+        prefs.moduleSchool && !school.compactVisible && !homework.items.isEmpty
+    }
 
     var body: some View {
         HStack(spacing: 0) {
@@ -93,6 +98,16 @@ private struct CompactView: View {
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity, alignment: .trailing)
                 .padding(.trailing, 8)
+        } else if showHomework {
+            HStack(spacing: 3) {
+                Image(systemName: "checklist")
+                    .font(.system(size: 10, weight: .semibold))
+                Text("\(homework.items.count)")
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+            }
+            .foregroundStyle(.white)
+            .frame(maxWidth: .infinity, alignment: .trailing)
+            .padding(.trailing, 8)
         }
     }
 
@@ -111,6 +126,13 @@ private struct CompactView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
         } else if showSchool, let trail = school.compactTrail {
             Text(trail)
+                .font(.system(size: 12, weight: .semibold, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(.white.opacity(0.85))
+                .padding(.leading, 8)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        } else if showHomework, let due = homework.compactDueLabel {
+            Text(due)
                 .font(.system(size: 12, weight: .semibold, design: .rounded))
                 .monospacedDigit()
                 .foregroundStyle(.white.opacity(0.85))

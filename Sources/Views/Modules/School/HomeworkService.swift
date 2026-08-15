@@ -52,6 +52,20 @@ final class HomeworkService: ObservableObject {
         let f = ISO8601DateFormatter(); f.formatOptions = [.withInternetDateTime]; return f
     }()
 
+    // MARK: - Compact notch display
+
+    /// Deadline hint for the closed-notch flank: "missing" beats everything,
+    /// then the soonest due date.
+    var compactDueLabel: String? {
+        guard !items.isEmpty else { return nil }
+        if items.contains(where: { $0.missing }) { return "missing" }
+        guard let soonest = items.compactMap({ $0.due }).min() else { return nil }
+        if Calendar.current.isDateInToday(soonest) { return "today" }
+        if Calendar.current.isDateInTomorrow(soonest) { return "tmrw" }
+        let f = DateFormatter(); f.dateFormat = "M/d"
+        return f.string(from: soonest)
+    }
+
     private func reload(force: Bool) {
         let mtime = (try? FileManager.default.attributesOfItem(atPath: stateURL.path)[.modificationDate]) as? Date
         guard force || mtime != lastMTime else { return }
