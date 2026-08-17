@@ -30,6 +30,13 @@ struct ExpandedPanel: View {
     /// Floating buttons: school panel and mirror, or exit back to the modules.
     private var mirrorToggle: some View {
         HStack(spacing: 6) {
+            if state.schoolMode {
+                Button(action: openHomeworkHelper) {
+                    trayButtonLabel("arrow.up.forward.app")
+                }
+                .buttonStyle(.plain)
+                .help("Open Homework Helper")
+            }
             if !state.mirrorMode {
                 Button(action: { state.schoolMode.toggle() }) {
                     trayButtonLabel(state.schoolMode ? "xmark" : "graduationcap.fill")
@@ -55,6 +62,18 @@ struct ExpandedPanel: View {
             .frame(width: 26, height: 26)
             .background(.black.opacity(0.45), in: Circle())
             .overlay(Circle().strokeBorder(.white.opacity(0.18), lineWidth: 0.5))
+    }
+
+    /// Open the Homework Helper Mac app (falls back to the browser if it's
+    /// missing), then tuck the tray away — the app is now the focus.
+    private func openHomeworkHelper() {
+        let app = URL(fileURLWithPath: "/Applications/Homework Helper.app")
+        if FileManager.default.fileExists(atPath: app.path) {
+            NSWorkspace.shared.openApplication(at: app, configuration: NSWorkspace.OpenConfiguration())
+        } else if let url = URL(string: "http://localhost:8788/") {
+            NSWorkspace.shared.open(url)
+        }
+        state.close()
     }
 
     private func toggleMirror() {
