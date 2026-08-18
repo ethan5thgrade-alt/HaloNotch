@@ -27,7 +27,8 @@ final class HomeworkService: ObservableObject {
 
     func start() {
         reload(force: true)
-        timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in
+        // 30s mtime poll on a local file — new assignments hit the notch fast.
+        timer = Timer.scheduledTimer(withTimeInterval: 30, repeats: true) { [weak self] _ in
             self?.reload(force: false)
         }
         if let timer { RunLoop.main.add(timer, forMode: .common) }
