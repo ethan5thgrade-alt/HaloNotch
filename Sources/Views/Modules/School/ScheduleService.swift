@@ -28,6 +28,10 @@ struct SchoolConfig: Codable {
     let terms: [[SchoolClass]]       // outer index = term-1
     let days: [String: [SchoolBlockDef]]  // keyed mon/tue/wed/thu/fri
     let holidays: [String]           // yyyy-MM-dd, no school
+    // Specific dates that run a different day template, keyed yyyy-MM-dd with
+    // a `days` key as value (e.g. "2026-08-24": "fri" = no Royal Time that
+    // Monday). Optional so older school.json files still decode.
+    let dayOverrides: [String: String]?
 }
 
 /// A block resolved onto today's real clock, with its class attached.
@@ -113,8 +117,12 @@ final class ScheduleService: ObservableObject {
             return
         }
         let weekdayKeys = [1: "sun", 2: "mon", 3: "tue", 4: "wed", 5: "thu", 6: "fri", 7: "sat"]
-        guard let key = weekdayKeys[cal.component(.weekday, from: now)],
-              let template = config.days[key] else {
+        guard let weekdayKey = weekdayKeys[cal.component(.weekday, from: now)] else {
+            publish([], .after, schoolDay: false, reason: "Weekend")
+            return
+        }
+        let key = config.dayOverrides?[todayKey] ?? weekdayKey
+        guard let template = config.days[key] else {
             publish([], .after, schoolDay: false, reason: "Weekend")
             return
         }
@@ -240,7 +248,15 @@ final class ScheduleService: ObservableObject {
                 SchoolBlockDef(label: "Period 4", period: 4, start: "14:04", end: "15:35"),
             ],
         ],
-        holidays: []
+        holidays: [],
+        // No Royal Time the first two weeks (Ethan, 2026-08-19): those
+        // Mon/Weds run the Friday (regular, no-RT) bells. RT resumes 9/2.
+        dayOverrides: [
+            "2026-08-19": "fri",
+            "2026-08-24": "fri",
+            "2026-08-26": "fri",
+            "2026-08-31": "fri",
+        ]
     )
 
     private static let royalDay = [
