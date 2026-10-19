@@ -13,7 +13,7 @@ struct MirrorView: View {
             Color.black
             switch mirror.status {
             case .live, .idle:
-                CameraPreview(session: mirror.session)
+                CameraPreview(previewLayer: mirror.previewLayer)
                     .scaleEffect(x: -1, y: 1)   // horizontal flip = mirror
             case .denied:
                 message("video.slash.fill", "Camera access denied",
@@ -37,28 +37,27 @@ struct MirrorView: View {
     }
 }
 
-/// AppKit bridge for `AVCaptureVideoPreviewLayer` as a layer-hosting NSView.
+/// AppKit bridge that hosts the controller's `AVCaptureVideoPreviewLayer`.
+/// It never touches the session itself — see `MirrorController.previewLayer`.
 struct CameraPreview: NSViewRepresentable {
-    let session: AVCaptureSession
+    let previewLayer: AVCaptureVideoPreviewLayer
 
     func makeNSView(context: Context) -> PreviewNSView {
-        let v = PreviewNSView()
-        v.previewLayer.session = session
-        v.previewLayer.videoGravity = .resizeAspectFill
-        return v
+        PreviewNSView(previewLayer: previewLayer)
     }
 
-    func updateNSView(_ nsView: PreviewNSView, context: Context) {
-        nsView.previewLayer.session = session
-    }
+    func updateNSView(_ nsView: PreviewNSView, context: Context) {}
 
     final class PreviewNSView: NSView {
-        let previewLayer = AVCaptureVideoPreviewLayer()
+        let previewLayer: AVCaptureVideoPreviewLayer
 
-        override init(frame frameRect: NSRect) {
-            super.init(frame: frameRect)
-            layer = previewLayer
+        init(previewLayer: AVCaptureVideoPreviewLayer) {
+            self.previewLayer = previewLayer
+            super.init(frame: .zero)
             wantsLayer = true
+            // The shared layer may still sit in a previous (dismissed) view.
+            previewLayer.removeFromSuperlayer()
+            layer?.addSublayer(previewLayer)
         }
         required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 

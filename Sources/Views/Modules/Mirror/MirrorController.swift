@@ -9,6 +9,11 @@ final class MirrorController: ObservableObject {
     static let shared = MirrorController()
 
     let session = AVCaptureSession()
+    /// Bound to the session once, here, before it can ever be running. The
+    /// view only hosts this layer — re-binding a preview layer on the main
+    /// thread while `startRunning()` is enumerating connections on `queue`
+    /// throws (collection mutated while enumerated) and aborts the app.
+    let previewLayer: AVCaptureVideoPreviewLayer
 
     enum Status { case idle, live, denied, unavailable }
     @Published private(set) var status: Status = .idle
@@ -16,7 +21,10 @@ final class MirrorController: ObservableObject {
     private let queue = DispatchQueue(label: "com.ethanstrauss.halonotch.mirror")
     private var configured = false
 
-    private init() {}
+    private init() {
+        previewLayer = AVCaptureVideoPreviewLayer(session: session)
+        previewLayer.videoGravity = .resizeAspectFill
+    }
 
     func start() {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
