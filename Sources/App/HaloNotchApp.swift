@@ -36,6 +36,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if prefs.moduleNowPlaying { NowPlayingController.shared.start() }
         if prefs.moduleBattery    { BatteryService.shared.start() }
         if prefs.moduleSchool     { ScheduleService.shared.start(); HomeworkService.shared.start() }
+        AlexaSpeaker.shared.startObserving()
 
         // Dev aid: `open HaloNotch.app --args --demo-open` expands the tray on
         // launch so the expanded UI can be screenshotted without hovering.

@@ -53,6 +53,16 @@ struct SettingsView: View {
                 }
             }
 
+            Section("Alexa speaker") {
+                Toggle("Auto-connect to my Echo when music starts", isOn: $prefs.alexaAutoConnect)
+                TextField("Echo name contains", text: $prefs.alexaDeviceName, prompt: Text("Echo"))
+                    .onSubmit { AlexaSpeaker.shared.refresh() }
+                Text("Click the speaker button in the Now Playing tray to send music to your Echo over Bluetooth. First time: say \"Alexa, pair Bluetooth\", then click the button and HaloNotch pairs it. Click again to switch back to the Mac.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
             Section("Modules") {
                 Toggle("Now Playing", isOn: $prefs.moduleNowPlaying)
                     .onChange(of: prefs.moduleNowPlaying) { _, on in
@@ -72,6 +82,6 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 460, height: 560)
+        .frame(width: 460, height: 640)
     }
 }

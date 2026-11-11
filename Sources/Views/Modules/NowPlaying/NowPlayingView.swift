@@ -64,6 +64,8 @@ struct NowPlayingView: View {
                 .offset(x: 6)
             transport("forward.fill", size: 15) { np.next() }
                 .offset(x: 12)
+            AlexaButton()
+                .offset(x: 14)
         }
     }
 

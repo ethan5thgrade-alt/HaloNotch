@@ -44,6 +44,7 @@ targets:
         NSCalendarsUsageDescription: "HaloNotch shows your upcoming events in the notch."
         NSCalendarsFullAccessUsageDescription: "HaloNotch shows your upcoming events in the notch."
         NSAppleEventsUsageDescription: "HaloNotch controls Spotify and Apple Music playback from the notch."
+        NSBluetoothAlwaysUsageDescription: "HaloNotch connects to your Echo so music plays on Alexa."
         NSCameraUsageDescription: "HaloNotch turns the notch into a mirror using the built-in camera."
         # Quiet the default about-panel
         NSHumanReadableCopyright: "Built by Ethan Strauss"

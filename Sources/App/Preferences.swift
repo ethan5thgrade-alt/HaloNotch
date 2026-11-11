@@ -54,6 +54,8 @@ final class Preferences: ObservableObject {
         static let modTimer = "moduleTimer"
         static let modSchool = "moduleSchool"
         static let notchWidthPadding = "notchWidthPadding"
+        static let alexaAutoConnect = "alexaAutoConnect"
+        static let alexaDeviceName = "alexaDeviceName"
     }
 
     @Published var material: NotchMaterial {
@@ -84,6 +86,11 @@ final class Preferences: ObservableObject {
     /// physical notch exists and we synthesize a floating pill).
     @Published var notchWidthPadding: Double { didSet { d.set(notchWidthPadding, forKey: K.notchWidthPadding) } }
 
+    /// Alexa: connect to the paired Echo automatically whenever music starts.
+    @Published var alexaAutoConnect: Bool { didSet { d.set(alexaAutoConnect, forKey: K.alexaAutoConnect) } }
+    /// Alexa: substring of the Echo's Bluetooth name. Empty = any device with "Echo" in its name.
+    @Published var alexaDeviceName: String { didSet { d.set(alexaDeviceName, forKey: K.alexaDeviceName) } }
+
     @Published var launchAtLogin: Bool {
         didSet {
             d.set(launchAtLogin, forKey: K.launchAtLogin)
@@ -105,6 +112,8 @@ final class Preferences: ObservableObject {
         moduleSchool = d.object(forKey: K.modSchool) as? Bool ?? true
         notchWidthPadding = d.object(forKey: K.notchWidthPadding) as? Double ?? 0
         launchAtLogin = d.object(forKey: K.launchAtLogin) as? Bool ?? false
+        alexaAutoConnect = d.object(forKey: K.alexaAutoConnect) as? Bool ?? false
+        alexaDeviceName = d.string(forKey: K.alexaDeviceName) ?? ""
     }
 
     private func syncLoginItem() {
