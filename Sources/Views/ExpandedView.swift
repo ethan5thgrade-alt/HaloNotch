@@ -30,6 +30,13 @@ struct ExpandedPanel: View {
     /// Floating buttons: school panel and mirror, or exit back to the modules.
     private var mirrorToggle: some View {
         HStack(spacing: 6) {
+            if !state.schoolMode && !state.mirrorMode {
+                Button(action: openAgentHQ) {
+                    trayButtonLabel("person.3.fill")
+                }
+                .buttonStyle(.plain)
+                .help("Open Agent HQ")
+            }
             if state.schoolMode {
                 Button(action: openHomeworkHelper) {
                     trayButtonLabel("arrow.up.forward.app")
@@ -71,6 +78,14 @@ struct ExpandedPanel: View {
         if FileManager.default.fileExists(atPath: app.path) {
             NSWorkspace.shared.openApplication(at: app, configuration: NSWorkspace.OpenConfiguration())
         } else if let url = URL(string: "http://localhost:8788/") {
+            NSWorkspace.shared.open(url)
+        }
+        state.close()
+    }
+
+    /// Open the Agent HQ dashboard (all agents) in the browser and tuck the tray away.
+    private func openAgentHQ() {
+        if let url = URL(string: "http://127.0.0.1:8790/") {
             NSWorkspace.shared.open(url)
         }
         state.close()
