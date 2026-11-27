@@ -9,12 +9,22 @@ final class NotchWindowController {
     private let state = NotchState.shared
     private let prefs = Preferences.shared
     private var geo = ScreenGeometry.measure()
+    private var watchdog: Timer?
+    private var closedAt = Date.distantPast
 
     func show() {
         rebuild()
         hover.onMouseMove = { [weak self] p in self?.handleMove(p) }
         hover.onMouseDown = { [weak self] p in self?.handleDown(p) }
         hover.start()
+
+        // Watchdog: mouse-move events alone can miss the cursor leaving (drags,
+        // AeroSpace cursor warps, Space switches), which left the expanded panel
+        // clickable and swallowing clicks on whatever sat under it (Chrome's tab
+        // strip). Poll the cursor and force click-through back on when closed.
+        watchdog = Timer.scheduledTimer(withTimeInterval: 0.4, repeats: true) { [weak self] _ in
+            self?.enforceClickThrough()
+        }
 
         NotificationCenter.default.addObserver(
             self, selector: #selector(screensChanged),
@@ -88,6 +98,15 @@ final class NotchWindowController {
         if state.mode == .closed && !prefs.openOnHover && notchHoverRect.contains(p) { open() }
     }
 
+    private func enforceClickThrough() {
+        guard let panel else { return }
+        if state.mode == .open {
+            if !openRect.insetBy(dx: -16, dy: -16).contains(NSEvent.mouseLocation) { close() }
+        } else if !panel.ignoresMouseEvents, Date().timeIntervalSince(closedAt) > 0.5 {
+            panel.ignoresMouseEvents = true
+        }
+    }
+
     private func open() {
         panel?.ignoresMouseEvents = false
         withAnimation(prefs.openAnimation) {
@@ -103,6 +122,7 @@ final class NotchWindowController {
             MirrorController.shared.stop()
         }
         state.schoolMode = false
+        closedAt = Date()
         withAnimation(prefs.closeAnimation) {
             state.mode = .closed
             state.isHovering = false

@@ -13,7 +13,7 @@ final class HoverMonitor {
     var onMouseDown: ((CGPoint) -> Void)?
 
     func start() {
-        let mask: NSEvent.EventTypeMask = [.mouseMoved, .leftMouseDown]
+        let mask: NSEvent.EventTypeMask = [.mouseMoved, .leftMouseDragged, .leftMouseDown]
         global = NSEvent.addGlobalMonitorForEvents(matching: mask) { [weak self] event in
             self?.dispatch(event)
         }
@@ -26,7 +26,7 @@ final class HoverMonitor {
     private func dispatch(_ event: NSEvent) {
         let p = NSEvent.mouseLocation   // global, bottom-left origin — matches NSScreen.frame
         switch event.type {
-        case .mouseMoved:    onMouseMove?(p)
+        case .mouseMoved, .leftMouseDragged: onMouseMove?(p)
         case .leftMouseDown: onMouseDown?(p)
         default: break
         }
